@@ -2,12 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from main.utils.igdbapi import IgdbApi
 
-def index(request):
-    data ={
-        'title': 'Main page'
-    }
-    return render(request, 'main/index.html', {'title': 'Main Page'})
-
 
 def catalog(request):
     game_list = IgdbApi().get_games()
