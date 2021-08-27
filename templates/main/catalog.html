@@ -1,0 +1,65 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    {% load static %}
+    <title>Game Catalog</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <header>
+      </div>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+          <a href="" class="navbar-brand d-flex align-items-center">
+            <strong>Game Muster is the games catalog</strong>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+      <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+              {% for game in games %}
+                <div class="col-md-4">
+                  <div class="card mb-4 box-shadow">
+                    {% if game.screenshot_url %}
+                      <img class="card-img-top" style="height: 20%; width: 100%; display: block;" src="{{game.screenshot_url}}" data-holder-rendered="true">
+                    {% else %}
+                      <img class="card-img-top" style="height: 20%; width: 100%; display: block;" src="{% static 'main/img/no-image.png' %}" data-holder-rendered="true">
+                    {% endif %}
+                    <div class="card-body">
+                      <h5 class="card-title">{{game.name}}</h5>
+                    <div class="btn-group pull-right" role="group" style="position: center;align-content: flex-start; margin: 15px; margin-left: 0;">
+                         {% if game.platforms %}
+                        {% for platform in game.platforms %}
+                            <button class="btn btn-success mb-1 btn-sm" disabled>{{platform.abbreviation}}</button>
+                             {% endfor %}
+                          {% endif %}
+                    </div>
+                          <br>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a id="{{game.id}}" onclick="location.href='{% url 'game_page' game_id=game.id%}'" type="button" class="btn btn-primary mr-2 btn-outline-secondary">OPEN</a>
+                            <a type="button" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

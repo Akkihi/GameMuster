@@ -1,0 +1,82 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    {% load static %}
+    {% load poll_extras %}
+    <title>Game Catalog</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/main/css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <header>
+      </div>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+          <a href="{% url 'catalog' %}" class="navbar-brand d-flex align-items-center">
+            <strong>Game Muster is the games catalog</strong>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+        {# For loop info about game #}
+        {% for info in game_info %}
+
+            <h1 class="h1-margit-top">{{ info.name }}</h1>
+
+            <h6>Genres:
+                    {% for genre in info.genres %}
+                            {% if not forloop.last%}{{ genre.name|add:', '}}
+                            {% elif forloop.last%}{{ genre.name|add:' '}}
+                            {% endif %}
+                            {% empty %}
+                            {{ 'No information available.'}}
+                    {% endfor %}
+
+            </h6>
+
+            <h4>Description</h4>
+                <h6>{{ info.summary|default:'No information available.' }}</h6>
+
+            <h4>Release date</h4>
+                <h6>{% for release_date in info.release_dates%}
+                    {% if forloop.first%}
+                        {{ release_date.date|fromunix|date:"d F Y"}}
+                        {% if release_date.date is None %}
+                            {{ 'No information available.'}}{% endif %}
+                        {% else %}
+                    {% endif %}
+                    {% empty %}
+                    {{ 'No information available.'}}
+                    {% endfor %}</h6>
+            <h4>Screenshots</h4>
+            <div class="container">
+            <div class="row">
+            {% for screenshot in info.screenshots %}
+                <div class="col-2"><img class="img-container" style=" width: 200px; display: block;" src="{{screenshot.url|replace_screenshot}}" data-holder-rendered="true"></div>
+                {% empty %}
+                <h6>{{ 'No information available.'}}</h6>
+            {% endfor %}
+            </div>
+            </div>
+            {# todo rating, platforms. tweets #}
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    </main>
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="{% url 'catalog' %}">Back to catalog</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

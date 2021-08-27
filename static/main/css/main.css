@@ -1,0 +1,28 @@
+
+aside{
+	float: left;
+	background: #4ECDC4;
+	width: 20%;
+	padding: 2%;
+	height: 100vh;
+	color: #F7FFF7;
+}
+.img-container {
+  width: 250px;
+  color: transparent;
+  background-position: center;
+  border: 2px solid;
+  border-radius: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: block;
+}
+
+
+.h1-margit-top {
+    margin-top: 20px;
+}
+
+h6 {
+    margin: 20px;
+}
