@@ -1,7 +1,7 @@
-
 import requests
 import json
 from gamewebsite.settings import CLIENT_ID, CLIENT_SECRET
+
 
 class IgdbApi:
     MAIN_FIELDS = ['name', 'screenshots.url', 'aggregated_rating', 'platforms.abbreviation']  # todo platforms genres user rating default
@@ -9,6 +9,7 @@ class IgdbApi:
     FIELDS = ['name', 'screenshots.url', 'summary', 'release_dates.date', 'rating', 'aggregated_rating',
               'genres.name', 'platforms.abbreviation', 'rating_count', 'tags', 'updated_at',
               'aggregated_rating_count']  # todo game by id
+    SEARCH = ['character', 'company', 'description', 'game', 'name', 'platform']
 
     def __init__(self):
         api_url = "https://api.igdb.com/v4/"
@@ -21,9 +22,9 @@ class IgdbApi:
         self.__query_header = {'Client-ID': CLIENT_ID,
                                'Authorization': ('Bearer %s' % access_token)}
 
-    def get_games(self, limit=100):
+    def get_games(self, limit=200):
         url = self.__api_url + "games/"
-        data = f"fields {','.join(self.MAIN_FIELDS)}; sort rating desc; limit {limit};"
+        data = f"fields {','.join(self.FIELDS)}; sort rating desc; limit {limit};"
         response = requests.post(url, headers=self.__query_header, data=data)
         if response.ok:
             games = json.loads(response.text)

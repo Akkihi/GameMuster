@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
+class GameData(models.Model):
+    id = models.UUIDField(primary_key=True)
+    data = models.JSONField()
