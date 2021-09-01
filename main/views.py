@@ -1,10 +1,8 @@
-import logging
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
 from main.utils.igdbapi import IgdbApi
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from .models import GameData
-from django.db import IntegrityError
 
 
 def catalog(request):
@@ -34,8 +32,9 @@ def search(request):
 
 
 def page_game(request, game_id):
-    game_info = IgdbApi().get_game_by_id(game_id)
-    return render(request, 'main/game_page.html', {'game_info': game_info})
+    game_data = GameData.objects.filter(data__id=game_id)
+    game_info = game_data.get().data
+    return render(request, 'main/game_page.html', {'info': game_info})
 
 
 '''
