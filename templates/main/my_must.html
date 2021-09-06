@@ -38,6 +38,10 @@
             {% endif %}
                         </div>
                     </div>
+             </div>
+            </div>
+        </div>
+    </div>
 </header>
 
 <main role="main">
@@ -54,7 +58,7 @@
                 </div>
             </form>
             <div class="row">
-                {% for game in games %}
+                {% for game in games  %}
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
                             {% if game.data.screenshot_url %}
@@ -66,36 +70,37 @@
                             {% endif %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ game.data.name }}</h5>
-
                                 <div class="btn-group pull-right" role="group"
-                                     style="position: center;align-content: flex-start; margin:15px; margin-left:0;">
-                                                                {% if game.data.platforms %}
+                                     style="position: center;align-content: flex-start; margin: 15px; margin-left: 0;">
+                                    {% if game.data.platforms %}
                                         {% for platform in game.data.platforms %}
-                                            {% if platform.abbreviation %}
-                                            <button class="btn btn-success mb-1 btn-sm"  disabled>{{ platform.abbreviation }}</button>
-                                        {% endif %}
+                                            <button class="btn btn-success mb-1 btn-sm"
+                                                    disabled>{{ platform.abbreviation }}</button>
                                         {% endfor %}
                                     {% endif %}
                                 </div>
                                 <br>
                                 <div class="btn-group btn-group-sm" role="group">
+
                                     <a id="{{ game.data.id }}"
                                        onclick="location.href='{% url 'game_page' game_id=game.data.id %}'"
                                        type="button" class="btn btn-primary mr-2 btn-outline-secondary">OPEN</a>
-                                            {% for must in musts %}
-                                            {% if must.data.id == game.data.id%}
-                                            <a id="{{ game.data.id }}"  type="button" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
+                                    {% for must in user_must %}
+                                    {% if must.game_must_id == game.data.id %}
+                                        <a id="{{ game.data.id }}"  type="button" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
+                                    {% else %}
+                                        <a id="{{ game.data.id }}"  type="button" class="btn btn-primary mr-2 btn-outline-primary">MUST</a>
+                                    {% endif %}
+                                        {% endfor %}
 
-                                            {% endif %}
-                                            {% endfor %}
                                 </div>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-
+                    {% endfor %}
             </div>
         </div>
+    </div>
     </div>
 </main>
 

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+    "crispy_forms"
 ]
 
 MIDDLEWARE = [
@@ -44,6 +45,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'gamewebsite.urls'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 TEMPLATES = [
     {

@@ -16,3 +16,7 @@ def fromunix(value):
 def replace_screenshot(value):
     return value.replace('t_thumb', 't_screenshot_huge')
 
+
+@register.filter()
+def to_int(value):
+    return int(value)
