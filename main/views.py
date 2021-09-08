@@ -3,6 +3,7 @@ from django import views
 from django.http import  Http404, HttpResponseRedirect
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 
 from main.utils.igdbapi import IgdbApi
 from .models import GameData, UserMust
@@ -15,13 +16,13 @@ class MainPage(views.View):
     def get(self, request, *args, **kwargs):
         username = None
         game_data = GameData.objects.all().order_by('-id')
-        must_games = None
+        must_games_list = list()
         if request.user.is_authenticated:
             username = request.user.username
             try:
-                must_games = UserMust.objects.get(username=username).must_game.all()
+                must_games = UserMust.objects.get(username=username).must_game.get_queryset()
                 for must in must_games:
-                    print(must.data)
+                    must_games_list.append(must.data['id'])
             except:
                 pass
         try:
@@ -30,27 +31,48 @@ class MainPage(views.View):
             page_obj = p.page(page_num)
         except InvalidPage or EmptyPage:
             raise Http404()
-        return render(request, 'main/catalog.html', {'games': page_obj, 'musts': must_games})
+        return render(request, 'main/catalog.html', {'games': page_obj, 'musts': must_games_list})
 
 
 class MyMust(views.View):
-    template_name = 'my_must.html'
+    template_name = 'must.html'
 
     def get(self, request, *args, **kwargs):
         username = None
-        must_data = []
+        must_data = None
+        must_games_list = list()
         if request.user.is_authenticated:
+            username = request.user.username
             try:
-                username = request.user.username
-                game_data = GameData.objects.all()
-                game_must_id = UserMust.objects.all().filter(username=username)
-                for game in game_must_id:
-                    for i in game_data:
-                        if game == i:
-                            must_data.append(i)
+                must_data = UserMust.objects.get(username=username).must_game.order_by('-id')
+                for must in must_data:
+                    must_games_list.append(must.data['id'])
             except:
                 pass
-        return render(request, 'main/my_must.html', {'games': must_data})
+        try:
+            p = Paginator(must_data, 6)
+            page_num = request.GET.get('p', 1)
+            page_obj = p.page(page_num)
+        except InvalidPage or EmptyPage:
+            raise Http404()
+        return render(request, 'main/must.html', {'games': page_obj, 'musts': must_games_list})
+
+
+class UserProfile(views.View):
+    template_name = 'profile.html'
+
+    def get(self, request, *args, **kwargs):
+        user_data = None
+        username = None
+        if request.user.is_authenticated:
+            username = request.user
+            user_data = User.objects.filter(username=username)
+            print()
+        else:
+            raise Http404("You're not loggined")
+
+        return render(request, 'main/profile.html', {'games': user_data})
+
 
 class LoginView(views.View):
 
@@ -110,17 +132,27 @@ class RegistrationView(views.View):
 
 def search(request):
     search_query = request.GET.get('sq', '')
+    must_games_list = list()
     if search_query:
-        game_data = GameData.objects.filter(data__name__icontains=search_query)
+        game_data = GameData.objects.filter(data__name__icontains=search_query).order_by('-id')
     else:
-        game_data = GameData.objects.all().order_by('-id')
+        game_data = GameData.objects.get_queryset().order_by('-id')
+
+    if request.user.is_authenticated:
+        username = request.user.username
+        try:
+            must_games = UserMust.objects.get(username=username).must_game.get_queryset()
+            for must in must_games:
+                must_games_list.append(must.data['id'])
+        except:
+            pass
     try:
         p = Paginator(game_data, 6)
         page_num = request.GET.get('p', 1)
         page_obj = p.page(page_num)
     except InvalidPage or EmptyPage:
         raise Http404()
-    return render(request, 'main/search.html', {'games': page_obj, 'search_query': search_query})
+    return render(request, 'main/search.html', {'games': page_obj, 'search_query': search_query, 'musts': must_games_list})
 
 
 def page_game(request, game_id):

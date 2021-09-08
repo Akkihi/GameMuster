@@ -32,7 +32,7 @@
                 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
                 <div class="btn-group" role="group" aria-label="First group">
                 <a class='nav-link' href="{% url 'profile' %}">PROFILE {{ request.user.username }}</a>
-                <a class='nav-link' href="{% url 'must' %}">MY MUST</a>
+                <a class='nav-link' href="{% url 'catalog' %}">CATALOG</a>
                 <a class='nav-link' href="{% url 'logout' %}">LOG OUT</a>
                 </div>
                 </div>
@@ -44,18 +44,10 @@
 <main role="main">
     <div class="album py-5 bg-light">
         <div class="container">
-            <form action="{% url 'catalog_search' %}">
-                <div class="input-group mb-3"
-                     style="max-width: 500px; margin: auto; padding-bottom: 20px; padding-top: 0px;">
-                    <input type="text" class="form-control" placeholder="Search..." aria-label="Search..."
-                           aria-describedby="basic-addon2" name="sq">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-                    </div>
-                </div>
-            </form>
+            <strong><h1 style="margin: 0 auto; text-align: center; margin-bottom: 25px; margin-top: -20px;">MY MUST<hr></h1></strong><br>
+
             <div class="row">
-                {% for game in games %}
+                {% for game in games  %}
                     <div class="col-md-4">
                         <div class="card mb-4 box-shadow">
                             {% if game.data.screenshot_url %}
@@ -67,40 +59,35 @@
                             {% endif %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ game.data.name }}</h5>
-
                                 <div class="btn-group pull-right" role="group"
-                                     style="position: center;align-content: flex-start; margin:15px; margin-left:0;">
-                                                                {% if game.data.platforms %}
+                                     style="position: center;align-content: flex-start; margin: 15px; margin-left: 0;">
+                                    {% if game.data.platforms %}
                                         {% for platform in game.data.platforms %}
-                                            {% if platform.abbreviation %}
-                                            <button class="btn btn-success mb-1 btn-sm"  disabled>{{ platform.abbreviation }}</button>
-                                        {% endif %}
+                                            <button class="btn btn-success mb-1 btn-sm"
+                                                    disabled>{{ platform.abbreviation }}</button>
                                         {% endfor %}
                                     {% endif %}
-
                                 </div>
                                 <br>
-
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button id="{{ game.data.id }}"
+
+                                    <a id="{{ game.data.id }}"
                                        onclick="location.href='{% url 'game_page' game_id=game.data.id %}'"
-                                       class="btn btn-primary mr-2 btn-outline-secondary">OPEN</button>
+                                       type="button" class="btn btn-primary mr-2 btn-outline-secondary">OPEN</a>
                                     {% if game.data.id in musts %}
                                         <button id="{{ game.data.id }}" name="unmust" class="btn btn-primary mr-2 btn-outline-secondary">UNMUST</button>
                                     {% else %}
                                     <button id="{{ game.data.id }}" name="must" class="btn btn-primary mr-2 btn-outline-secondary">MUST</button>
                                     {% endif %}
+
                                 </div>
-
-
-
                             </div>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                    {% endfor %}
             </div>
         </div>
+    </div>
 </main>
 
 <footer class="text">
