@@ -13,11 +13,26 @@
 </head>
 <body>
 <header>
-    </div>
     <div class="navbar navbar-dark bg-dark box-shadow">
         <div class="container d-flex justify-content-between">
             <a href="{% url 'catalog' %}" class="navbar-brand d-flex align-items-center">
                 <strong>Game Muster</strong>
+                {% if not request.user.is_authenticated %}
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                <a class='nav-link' href="{% url 'login' %}">LOG IN</a>
+                <a class='nav-link' href="{% url 'register' %}">SIGN UP</a>
+                </div>
+                </div>
+                {% else %}
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                <a class='nav-link' href="{% url 'catalog' %}">CATALOG</a>
+                <a class='nav-link' href="{% url 'must' %}">MY MUST</a>
+                <a class='nav-link' href="{% url 'logout' %}">LOG OUT</a>
+                </div>
+                </div>
+            {% endif %}
             </a>
         </div>
     </div>
@@ -27,7 +42,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
-                {# For loop info about game #}
+                            {# For loop info about game #}
 
                 <h1 class="h1-margit-top">{{ info.name }}</h1>
 
@@ -69,7 +84,22 @@
                 </div>
                 {# todo rating, platforms. tweets #}
             </div>
+        <div class="row" style="margin-left: 200px;">
+                    <form method="POST" style="margin: auto; margin-left: -200px; margin-top: 50px;">{% csrf_token %}
+                                {% if request.user.is_authenticated %}
+                                    {% if game_id in musts %}
+                                        <button id="{{ game_id }}" value="{{ game_id }}" name="unmust" class="btn btn-primary mr-2 btn-outline-secondary">UNMUST</button>
+                                    {% else %}
+                                    <button id="{{ game_id }}" value="{{ game_id }}" name="must" class="btn btn-primary mr-2 btn-outline-secondary">MUST</button>
+                                    {% endif %}
+                                {% else %}
+                                <a id="{{ game_id }}" onclick="location.href='register'" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
+                                {% endif %}
+                                </form></div>
+
+    </div>
         </div>
+
     </div>
 
 </main>

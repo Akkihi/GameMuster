@@ -14,6 +14,22 @@
         <div class="container d-flex justify-content-between">
           <a href="/" class="navbar-brand d-flex align-items-center">
             <strong>Game Muster</strong>
+              {% if not request.user.is_authenticated %}
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                <a class='nav-link' href="{% url 'login' %}">LOG IN</a>
+                <a class='nav-link' href="{% url 'register' %}">SIGN UP</a>
+                </div>
+                </div>
+                {% else %}
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                <a class='nav-link' href="{% url 'catalog' %}">CATALOG</a>
+                <a class='nav-link' href="{% url 'must' %}">MY MUST</a>
+                <a class='nav-link' href="{% url 'logout' %}">LOG OUT</a>
+                </div>
+                </div>
+            {% endif %}
           </a>
         </div>
       </div>

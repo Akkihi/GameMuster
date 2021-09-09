@@ -243,7 +243,6 @@ class Search(views.View):
                 gd = GameData.objects.get(id=game_id)
                 user = UserMust.objects.get(username=username)
                 gd.usermust_set.remove(user)
-            username = request.user.username
             try:
                 must_games = UserMust.objects.get(username=username).must_game.get_queryset()
                 for must in must_games:
@@ -260,19 +259,47 @@ class Search(views.View):
                       {'games': page_obj, 'search_query': search_query, 'musts': must_games_list})
 
 
+class GamePage(views.View):
+    template_name = 'game_page.html'
 
-def page_game(request, game_id):
-    game_data = GameData.objects.filter(data__id=game_id)
-    game_info = game_data.get().data
-    return render(request, 'main/game_page.html', {'info': game_info})
+    def get(self, request, game_id, *args, **kwargs):
+        must_games_list = list()
+        if request.user.is_authenticated:
+            username = request.user.username
+            try:
+                must_games = UserMust.objects.get(username=username).must_game.get_queryset()
+                for must in must_games:
+                    must_games_list.append(must.data['id'])
+            except:
+                pass
+        game_data = GameData.objects.filter(data__id=game_id)
+        game_info = game_data.get().data
+        return render(request, 'main/game_page.html', {'info': game_info, 'game_id': game_id, 'musts': must_games_list})
 
+    def post(self, request, game_id, *args, **kwargs):
+        must_games_list = list()
+        if request.user.is_authenticated:
+            username = request.user.username
+            if request.method == 'POST' and 'must' in request.POST:
+                game_id = int(request.POST.get('must', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.add(user)
+            if request.method == 'POST' and 'unmust' in request.POST:
+                game_id = int(request.POST.get('unmust', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.remove(user)
+            try:
+                must_games = UserMust.objects.get(username=username).must_game.get_queryset()
+                for must in must_games:
+                    must_games_list.append(must.data['id'])
+            except:
+                pass
+        game_data = GameData.objects.filter(data__id=game_id)
+        game_info = game_data.get().data
+        return render(request, 'main/game_page.html', {'info': game_info, 'game_id': game_id, 'musts': must_games_list})
 
-def test(request):
-    stuff_data = GameData.objects.all()
-    p = Paginator(stuff_data, 10)
-    page = p.page(2)
-    context = {'items': page }
-    return render(request, 'main/test.html', context)
 
 
 
