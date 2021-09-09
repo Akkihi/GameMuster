@@ -47,13 +47,11 @@ class MainPage(views.View):
                 gd = GameData.objects.get(id=game_id)
                 user = UserMust.objects.get(username=username)
                 gd.usermust_set.add(user)
-                print(gd)
             if request.method == 'POST' and 'unmust' in request.POST:
                 game_id = int(request.POST.get('unmust', ''))
                 gd = GameData.objects.get(id=game_id)
                 user = UserMust.objects.get(username=username)
                 gd.usermust_set.remove(user)
-                print(gd)
             try:
                 must_games = UserMust.objects.get(username=username).must_game.get_queryset()
                 for must in must_games:
@@ -106,13 +104,11 @@ class MyMust(views.View):
                 gd = GameData.objects.get(id=game_id)
                 user = UserMust.objects.get(username=username)
                 gd.usermust_set.add(user)
-                print(gd)
             if request.method == 'POST' and 'unmust' in request.POST:
                 game_id = int(request.POST.get('unmust', ''))
                 gd = GameData.objects.get(id=game_id)
                 user = UserMust.objects.get(username=username)
                 gd.usermust_set.remove(user)
-                print(gd)
             try:
                 must_data = UserMust.objects.get(username=username).must_game.order_by('-id')
                 for must in must_data:
@@ -200,29 +196,69 @@ class RegistrationView(views.View):
         return render(request, 'main/registration.html', context)
 
 
-def search(request):
-    search_query = request.GET.get('sq', '')
-    must_games_list = list()
-    if search_query:
-        game_data = GameData.objects.filter(data__name__icontains=search_query).order_by('-id')
-    else:
-        game_data = GameData.objects.get_queryset().order_by('-id')
+class Search(views.View):
+    template_name = 'search.html'
 
-    if request.user.is_authenticated:
-        username = request.user.username
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('sq', '')
+        must_games_list = list()
+        if search_query:
+            game_data = GameData.objects.filter(data__name__icontains=search_query).order_by('-id')
+        else:
+            game_data = GameData.objects.get_queryset().order_by('-id')
+
+        if request.user.is_authenticated:
+            username = request.user.username
+            try:
+                must_games = UserMust.objects.get(username=username).must_game.get_queryset()
+                for must in must_games:
+                    must_games_list.append(must.data['id'])
+            except:
+                pass
         try:
-            must_games = UserMust.objects.get(username=username).must_game.get_queryset()
-            for must in must_games:
-                must_games_list.append(must.data['id'])
-        except:
-            pass
-    try:
-        p = Paginator(game_data, 6)
-        page_num = request.GET.get('p', 1)
-        page_obj = p.page(page_num)
-    except InvalidPage or EmptyPage:
-        raise Http404()
-    return render(request, 'main/search.html', {'games': page_obj, 'search_query': search_query, 'musts': must_games_list})
+            p = Paginator(game_data, 6)
+            page_num = request.GET.get('p', 1)
+            page_obj = p.page(page_num)
+        except InvalidPage or EmptyPage:
+            raise Http404()
+        return render(request, 'main/search.html', {'games': page_obj, 'search_query': search_query, 'musts': must_games_list})
+
+    def post(self, request, *args, **kwargs):
+        search_query = request.GET.get('sq', '')
+        must_games_list = list()
+        if search_query:
+            game_data = GameData.objects.filter(data__name__icontains=search_query).order_by('-id')
+        else:
+            game_data = GameData.objects.get_queryset().order_by('-id')
+
+        if request.user.is_authenticated:
+            username = request.user.username
+            if request.method == 'POST' and 'must' in request.POST:
+                game_id = int(request.POST.get('must', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.add(user)
+            if request.method == 'POST' and 'unmust' in request.POST:
+                game_id = int(request.POST.get('unmust', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.remove(user)
+            username = request.user.username
+            try:
+                must_games = UserMust.objects.get(username=username).must_game.get_queryset()
+                for must in must_games:
+                    must_games_list.append(must.data['id'])
+            except:
+                pass
+        try:
+            p = Paginator(game_data, 6)
+            page_num = request.GET.get('p', 1)
+            page_obj = p.page(page_num)
+        except InvalidPage or EmptyPage:
+            raise Http404()
+        return render(request, 'main/search.html',
+                      {'games': page_obj, 'search_query': search_query, 'musts': must_games_list})
+
 
 
 def page_game(request, game_id):

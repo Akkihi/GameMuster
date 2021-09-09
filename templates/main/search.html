@@ -48,14 +48,21 @@
                           {% endif %}
                     </div>
                           <br>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <a id="{{game.data.id}}" onclick="location.href='{% url 'game_page' game_id=game.data.id%}'" type="button" class="btn btn-primary mr-2 btn-outline-secondary">OPEN</a>
-                            {% if game.data.id in musts %}
-                                <button id="{{ game.data.id }}" name="unmust" class="btn btn-primary mr-2 btn-outline-secondary">UNMUST</button>
+                        <form method="POST">{% csrf_token %}
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a id="{{ game.data.id }}"
+                                       onclick="location.href='{% url 'game_page' game_id=game.data.id %}'"
+                                       class="btn btn-primary mr-2 btn-outline-secondary">OPEN</a>
+                                {% if request.user.is_authenticated %}
+                                    {% if game.data.id in musts %}
+                                        <button id="{{ game.data.id }}" value="{{ game.data.id }}" name="unmust" class="btn btn-primary mr-2 btn-outline-secondary">UNMUST</button>
                                     {% else %}
-                                    <button id="{{ game.data.id }}" name="must" class="btn btn-primary mr-2 btn-outline-secondary">MUST</button>
+                                    <button id="{{ game.data.id }}" value="{{ game.data.id }}" name="must" class="btn btn-primary mr-2 btn-outline-secondary">MUST</button>
                                     {% endif %}
-                      </div>
+                                {% else %}
+                                <a id="{{ game.data.id }}" onclick="location.href='register'" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
+                                {% endif %}
+                                </div></form>
                     </div>
                   </div>
                 </div>
@@ -63,7 +70,6 @@
             </div>
           </div>
         </div>
-      </div>
     </main>
 
     <footer class="text">
