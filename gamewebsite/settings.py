@@ -30,7 +30,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
+    'django_celery_results',
     'main',
+    'celery',
     "crispy_forms"
 ]
 
@@ -102,10 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
-
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -118,6 +117,14 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Celery Configuration
+CELERY_TIMEZONE = "Europe/Moscow"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ENABLE_UTC = False
 
 
 # Static files (CSS, JavaScript, Images)

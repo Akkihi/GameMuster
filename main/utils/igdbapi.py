@@ -6,9 +6,9 @@ from gamewebsite.settings import CLIENT_ID, CLIENT_SECRET
 class IgdbApi:
     MAIN_FIELDS = ['name', 'screenshots.url', 'aggregated_rating', 'platforms.abbreviation']  # todo platforms genres user rating default
 
-    FIELDS = ['name', 'screenshots.url', 'summary', 'release_dates.date', 'rating', 'aggregated_rating',
+    FIELDS = ['name', 'screenshots.url', 'summary', 'release_dates.date', 'aggregated_rating',
               'genres.name', 'platforms.abbreviation', 'rating_count', 'tags', 'updated_at',
-              'aggregated_rating_count']  # todo game by id
+              'aggregated_rating_count', 'rating']  # todo game by id
     SEARCH = ['character', 'company', 'description', 'game', 'name', 'platform']
 
     def __init__(self):
@@ -24,7 +24,7 @@ class IgdbApi:
 
     def get_games(self, limit=200):
         url = self.__api_url + "games/"
-        data = f"fields {','.join(self.FIELDS)}; sort rating desc; limit {limit};"
+        data = f"fields {','.join(self.FIELDS)};sort rating asc; where rating != null; limit {limit};"
         response = requests.post(url, headers=self.__query_header, data=data)
         if response.ok:
             games = json.loads(response.text)
@@ -33,6 +33,7 @@ class IgdbApi:
                     game['screenshot_url'] = game['screenshots'][0]['url'].replace('t_thumb', 't_screenshot_huge')
             return games
         else:
+            print('Error')
             return None
 
     def get_game_by_id(self, game_id):

@@ -14,6 +14,7 @@ class MainPage(views.View):
     template_name = 'catalog.html'
 
     def get(self, request, *args, **kwargs):
+
         username = None
         game_data = GameData.objects.all().order_by('-id')
         must_games_list = list()
@@ -33,16 +34,85 @@ class MainPage(views.View):
             raise Http404()
         return render(request, 'main/catalog.html', {'games': page_obj, 'musts': must_games_list})
 
+    def post(self, request, *args, **kwargs):
+
+        username = None
+        game_data = GameData.objects.all().order_by('-id')
+        must_games_list = list()
+        game_id = None
+        if request.user.is_authenticated:
+            username = request.user.username
+            if request.method == 'POST' and 'must' in request.POST:
+                game_id = int(request.POST.get('must', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.add(user)
+                print(gd)
+            if request.method == 'POST' and 'unmust' in request.POST:
+                game_id = int(request.POST.get('unmust', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.remove(user)
+                print(gd)
+            try:
+                must_games = UserMust.objects.get(username=username).must_game.get_queryset()
+                for must in must_games:
+                    must_games_list.append(must.data['id'])
+            except:
+                pass
+        try:
+            p = Paginator(game_data, 6)
+            page_num = request.GET.get('p', 1)
+            page_obj = p.page(page_num)
+        except InvalidPage or EmptyPage:
+            raise Http404()
+
+        return render(request, 'main/catalog.html', {'games': page_obj, 'musts': must_games_list})
+
 
 class MyMust(views.View):
     template_name = 'must.html'
 
     def get(self, request, *args, **kwargs):
+
         username = None
         must_data = None
         must_games_list = list()
         if request.user.is_authenticated:
             username = request.user.username
+            try:
+                must_data = UserMust.objects.get(username=username).must_game.order_by('-id')
+                for must in must_data:
+                    must_games_list.append(must.data['id'])
+            except:
+                pass
+        try:
+            p = Paginator(must_data, 6)
+            page_num = request.GET.get('p', 1)
+            page_obj = p.page(page_num)
+        except InvalidPage or EmptyPage:
+            raise Http404()
+        return render(request, 'main/must.html', {'games': page_obj, 'musts': must_games_list})
+
+    def post(self, request, *args, **kwargs):
+
+        must_data = None
+        must_games_list = list()
+        game_id = None
+        if request.user.is_authenticated:
+            username = request.user.username
+            if request.method == 'POST' and 'must' in request.POST:
+                game_id = int(request.POST.get('must', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.add(user)
+                print(gd)
+            if request.method == 'POST' and 'unmust' in request.POST:
+                game_id = int(request.POST.get('unmust', ''))
+                gd = GameData.objects.get(id=game_id)
+                user = UserMust.objects.get(username=username)
+                gd.usermust_set.remove(user)
+                print(gd)
             try:
                 must_data = UserMust.objects.get(username=username).must_game.order_by('-id')
                 for must in must_data:
