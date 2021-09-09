@@ -93,7 +93,7 @@
                                     <button id="{{ game_id }}" value="{{ game_id }}" name="must" class="btn btn-primary mr-2 btn-outline-secondary">MUST</button>
                                     {% endif %}
                                 {% else %}
-                                <a id="{{ game_id }}" onclick="location.href='register'" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
+                                <a id="{{ game_id }}" onclick="location.href={% url 'register'  %}" class="btn btn-primary mr-2 btn-outline-secondary">MUST</a>
                                 {% endif %}
                                 </form></div>
 
